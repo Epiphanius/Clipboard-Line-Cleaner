@@ -1,0 +1,13 @@
+{
+  "name": "Clipboard Line Cleaner",
+  "description": "Automatically removes empty lines from clipboard text",
+  "uuid": "clipboard-line-cleaner@example.com",
+  "shell-version": [
+    "45",
+    "46",
+    "48"
+  ],
+  "version": 1,
+  "url": "https://github.com/Epiphanius/Clipboard-Line-Cleaner/",
+  "settings-schema": "org.gnome.shell.extensions.clipboard-line-cleaner"
+}

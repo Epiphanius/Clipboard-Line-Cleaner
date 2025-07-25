@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-extensions">
+  <schema id="org.gnome.shell.extensions.clipboard-line-cleaner" path="/org/gnome/shell/extensions/clipboard-line-cleaner/">
+    <key name="enabled" type="b">
+      <default>true</default>
+      <summary>Enable automatic clipboard cleaning</summary>
+      <description>When enabled, the extension will automatically remove empty lines from clipboard text</description>
+    </key>
+  </schema>
+</schemalist>
