@@ -42,7 +42,7 @@ class ClipboardLineCleaner extends PanelMenu.Button {
         
         // Initialize settings - use extension settings if available
         try {
-            this.getSettings = new Gio.Settings({
+            this._settings = new Gio.Settings({
                 schema: 'org.gnome.shell.extensions.clipboard-line-cleaner'
             });
             this._enabled = this._settings.get_boolean('enabled');
