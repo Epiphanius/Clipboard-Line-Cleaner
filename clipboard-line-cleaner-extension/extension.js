@@ -110,7 +110,7 @@ class ClipboardLineCleaner extends PanelMenu.Button {
 });
 export default class ClipboardLineCleanerExtension extends Extension {
     enable() {
-        this._indicator = new ClipboardLineCleaner(this);
+        this._indicator = new ClipboardLineCleaner(this.getSettings());
         Main.panel.addToStatusArea(this.uuid, this._indicator);
     }
     disable() {
