@@ -23,8 +23,8 @@ class ClipboardLineCleaner extends PanelMenu.Button {
         let enabledItem = new PopupMenu.PopupSwitchMenuItem(_('Auto-clean clipboard'), true);
         enabledItem.connect('toggled', (item) => {
             this._enabled = item.state;
-            if (this.getSettings) {
-                this.getSettings.set_boolean('enabled', this._enabled);
+            if (this._settings) {
+                this._settings.set_boolean('enabled', this._enabled);
             }
         });
         this.menu.addMenuItem(enabledItem);
@@ -35,11 +35,11 @@ class ClipboardLineCleaner extends PanelMenu.Button {
         this.menu.addMenuItem(cleanNowItem);
         // Initialize settings - use extension settings if available
         try {
-            this.getSettings = this._extension.getSettings();
-            this._enabled = this.getSettings.get_boolean('enabled');
+            this._settings = this._extension.getSettings();
+            this._enabled = this._settings.get_boolean('enabled');
         } catch (e) {
             // Fallback if schema is not found
-            this.getSettings = null;
+            this._settings = null;
             this._enabled = true;
             log('Schema not found, using default settings');
         }
@@ -110,7 +110,7 @@ class ClipboardLineCleaner extends PanelMenu.Button {
 });
 export default class ClipboardLineCleanerExtension extends Extension {
     enable() {
-        this._indicator = new ClipboardLineCleaner(this.getSettings());
+        this._indicator = new ClipboardLineCleaner(this);
         Main.panel.addToStatusArea(this.uuid, this._indicator);
     }
     disable() {
