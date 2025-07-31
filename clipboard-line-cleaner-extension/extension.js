@@ -98,6 +98,7 @@ class ClipboardLineCleaner extends PanelMenu.Button {
         // Split text into lines, filter out empty lines, then rejoin
         return text.split('\n')
                   .filter(line => line.trim() !== '')
+                  .map(line => line.replace(/^\s+/, ''))
                   .join('\n');
     }
     destroy() {
