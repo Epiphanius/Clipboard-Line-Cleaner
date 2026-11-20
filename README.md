@@ -1,6 +1,12 @@
 # Clipboard Line Cleaner v8
 ## What's New in v8
 
+Sorry, but this version was rejected for this reason: "JustPerfection: EGO-X-004, mentioned by Shexli, needs to be fixed.' We, that is, my AI with me, the intermediary :). I do not take this so serious yet. Some more of her words:
+EGO-X-004 in shexli (the official Extensions.gnome.org static linter) is triggered by synchronous file I/O on the main GNOME Shell thread — specifically file.query_exists(null), file.load_contents(null), and file.replace_contents(...) inside _saveToEnabledDocuments() in extension.js. Calling synchronous I/O inside gnome-shell blocks the compositor UI thread, and is rejected during EGO review. 
+Now, she says: Replace those three synchronous calls with their asynchronous equivalents (load_contents_async and replace_contents_async), so gnome-shell never blocks when reading or writing your .txt files. … …
+
+This new version is in the que, which currently doesn't seem to be too long.
+
 Clipboard Line Cleaner v8 decouples text-cleaning modes and adds automatic saving to `.txt` files directly from your clipboard.
 
 ### Highlights
