@@ -169,6 +169,10 @@ class ClipboardLineCleaner extends PanelMenu.Button {
         this._clipboard.get_text(St.ClipboardType.CLIPBOARD, (clipboard, text) => {
             if (text && text !== this._lastClipboardText) {
                 this._lastClipboardText = text;
+                if (text.length > 1000000) {
+                    Main.notify(_('Clipboard Line Cleaner'), _('Skipped clipboard text larger than 1 MB'));
+                    return;
+                }
                 let cleanedText = this._cleanText(text);
 
                 if (cleanedText !== text) {
@@ -185,6 +189,10 @@ class ClipboardLineCleaner extends PanelMenu.Button {
     _cleanClipboardNow() {
         this._clipboard.get_text(St.ClipboardType.CLIPBOARD, (clipboard, text) => {
             if (text) {
+                if (text.length > 1000000) {
+                    Main.notify(_('Clipboard Line Cleaner'), _('Skipped clipboard text larger than 1 MB'));
+                    return;
+                }
                 let cleanedText = this._cleanText(text);
                 if (cleanedText !== text) {
                     this._clipboard.set_text(St.ClipboardType.CLIPBOARD, cleanedText);
