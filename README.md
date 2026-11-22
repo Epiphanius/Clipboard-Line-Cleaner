@@ -1,5 +1,10 @@
 # Clipboard Line Cleaner
 
+Clipboard text options (usable independently or together):
+- Remove empty lines from clipboard text.
+- Convert lines into continuous text.
+- Automatically save clips to up to 3 preselected `.txt` documents.
+
 A lightweight GNOME Shell extension that automatically cleans copied text in your clipboard and optionally saves clips directly to `.txt` files.
 
 ## Features
