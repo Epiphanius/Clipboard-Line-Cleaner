@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="gnome-shell-extensions">
+<schemalist>
   <schema id="org.gnome.shell.extensions.clipboard-line-cleaner" path="/org/gnome/shell/extensions/clipboard-line-cleaner/">
-    <key name="enabled" type="b">
-      <default>true</default>
-      <summary>Enable automatic clipboard cleaning</summary>
-      <description>When enabled, the extension will automatically remove empty lines from clipboard text</description>
+    <key name="remove-empty-lines" type="b">
+      <default>false</default>
+      <summary>Remove empty lines automatically</summary>
     </key>
+    <key name="remove-newlines" type="b">
+      <default>false</default>
+      <summary>Convert clipboard text to continuous text</summary>
+    </key>
+
+    <!-- Separator settings -->
+    <key name="separator-mode" type="s">
+      <default>'newline'</default>
+      <summary>Separator style between saved clipboard entries</summary>
+    </key>
+    <key name="custom-separator" type="s">
+      <default>'\n---\n'</default>
+      <summary>Custom separator string (supports \n and \t)</summary>
+    </key>
+
+    <!-- Document 1 -->
+    <key name="doc1-enabled" type="b"><default>false</default></key>
+    <key name="doc1-path" type="s"><default>''</default></key>
+    <key name="doc1-prepend" type="b"><default>false</default></key>
+
+    <!-- Document 2 -->
+    <key name="doc2-enabled" type="b"><default>false</default></key>
+    <key name="doc2-path" type="s"><default>''</default></key>
+    <key name="doc2-prepend" type="b"><default>false</default></key>
+
+    <!-- Document 3 -->
+    <key name="doc3-enabled" type="b"><default>false</default></key>
+    <key name="doc3-path" type="s"><default>''</default></key>
+    <key name="doc3-prepend" type="b"><default>false</default></key>
   </schema>
 </schemalist>
