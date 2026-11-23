@@ -4,10 +4,6 @@
   "name": "Clipboard Line Cleaner",
   "settings-schema": "org.gnome.shell.extensions.clipboard-line-cleaner",
   "shell-version": [
-    "45",
-    "46",
-    "47",
-    "48",
     "49",
     "50",
     "51"

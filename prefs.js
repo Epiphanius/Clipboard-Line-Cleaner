@@ -81,7 +81,7 @@ export default class ClipboardLineCleanerPreferences extends ExtensionPreference
         // Web Note Group
         const webnoteGroup = new Adw.PreferencesGroup({
             title: _('Web Note'),
-            description: _('Clean clipboard text so it is ready to paste, then open your preferred note service in the browser.'),
+            description: _('Clean clipboard text so it is ready to paste, then open your preferred note service. For Google Keep, click "Take a note..." and press Ctrl+V.'),
         });
         page.add(webnoteGroup);
 

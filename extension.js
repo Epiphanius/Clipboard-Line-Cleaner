@@ -114,7 +114,7 @@ class ClipboardLineCleaner extends PanelMenu.Button {
             this._docItems.push(docSwitch);
         }
 
-        this._prefsItem = new PopupMenu.PopupMenuItem(_('Configure .txt documents...'));
+        this._prefsItem = new PopupMenu.PopupMenuItem(_('Configure...'));
         this._prefsItem.connectObject('activate', () => {
             this._extension.openPreferences();
         }, this);
@@ -303,22 +303,16 @@ class ClipboardLineCleaner extends PanelMenu.Button {
                     return;
                 }
             } else {
-                // Default: Google Keep (pre-fill title/text when short enough, plus clipboard ready for Ctrl+V)
-                const firstLine = noteText.split(/\r?\n/)[0].replace(/[\x00-\x1F\x7F]/g, '').trim().slice(0, 80);
-                if (noteText.length <= 2500) {
-                    const params = [];
-                    if (firstLine)
-                        params.push(`title=${encodeURIComponent(firstLine)}`);
-                    params.push(`text=${encodeURIComponent(noteText)}`);
-                    targetUrl = `https://keep.google.com/?${params.join('&')}`;
-                } else {
-                    targetUrl = 'https://keep.google.com/';
-                }
+                // Google Keep ignores URL query parameters; cleaned text is already in clipboard
+                targetUrl = 'https://keep.google.com/';
             }
 
             try {
                 Gio.AppInfo.launch_default_for_uri(targetUrl, null);
-                Main.notify(_('Clipboard Line Cleaner'), _('Opened web note (cleaned text ready to paste)'));
+                const notifyMsg = provider === 'keep'
+                    ? _('Opened Google Keep — click "Take a note..." and press Ctrl+V')
+                    : _('Opened web note (cleaned text ready to paste)');
+                Main.notify(_('Clipboard Line Cleaner'), notifyMsg);
             } catch (e) {
                 console.error(`[ClipboardLineCleaner] Failed to launch web note URL: ${e.message}`);
                 Main.notify(_('Clipboard Line Cleaner'), _(`Could not open browser: ${e.message}`));

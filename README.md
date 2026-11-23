@@ -25,7 +25,7 @@ A lightweight GNOME Shell extension that automatically cleans copied text in you
 
 ## Configuration
 
-1. Click the **Clipboard Line Cleaner** icon in the GNOME top bar and select **Configure .txt documents...** (or open settings via the **Extensions** app).
+1. Click the **Clipboard Line Cleaner** icon in the GNOME top bar and select **Configure...** (or open settings via the **Extensions** app).
 2. Choose your preferred **Separator style** and configure up to three `.txt` document slots (**Append** or **Prepend**).
 3. Under **Email Compose**, optionally set a **Default Recipient (To)**, a **Default Subject** (leave empty to use the first line of the cleaned text), and whether to clean text before composing.
 4. Under **Web Note**, choose **Google Keep**, **Microsoft OneNote**, or **Custom URL**, and whether to clean text before opening the browser.
