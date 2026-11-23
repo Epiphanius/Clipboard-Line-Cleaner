@@ -128,6 +128,18 @@ class ClipboardLineCleaner extends PanelMenu.Button {
         }, this);
         this.menu.addMenuItem(this._cleanNowItem);
 
+        this._composeEmailItem = new PopupMenu.PopupMenuItem(_('Compose email from clipboard'));
+        this._composeEmailItem.connectObject('activate', () => {
+            this._composeEmailFromClipboard();
+        }, this);
+        this.menu.addMenuItem(this._composeEmailItem);
+
+        this._webNoteItem = new PopupMenu.PopupMenuItem(_('Send clipboard to web note'));
+        this._webNoteItem.connectObject('activate', () => {
+            this._sendClipboardToWebNote();
+        }, this);
+        this.menu.addMenuItem(this._webNoteItem);
+
         this._clipboard = St.Clipboard.get_default();
         this._clipboardTimeoutId = null;
         this._lastClipboardText = '';
@@ -204,6 +216,112 @@ class ClipboardLineCleaner extends PanelMenu.Button {
                 this._saveToEnabledDocuments(cleanedText);
             } else {
                 Main.notify(_('Clipboard Line Cleaner'), _('Clipboard is empty'));
+            }
+        });
+    }
+
+    _composeEmailFromClipboard() {
+        this._clipboard.get_text(St.ClipboardType.CLIPBOARD, (clipboard, text) => {
+            if (!text || !text.trim()) {
+                Main.notify(_('Clipboard Line Cleaner'), _('Clipboard is empty'));
+                return;
+            }
+
+            if (text.length > 1000000) {
+                Main.notify(_('Clipboard Line Cleaner'), _('Skipped clipboard text larger than 1 MB'));
+                return;
+            }
+
+            const cleanFirst = this._settings.get_boolean('mailto-clean-first');
+            const bodyText = cleanFirst ? this._cleanText(text) : text;
+
+            const MAX_MAILTO_CHARS = 3500;
+            if (bodyText.length > MAX_MAILTO_CHARS) {
+                Main.notify(
+                    _('Clipboard Line Cleaner'),
+                    _('Clipboard text exceeds 3,500 chars for mailto — please paste manually with Ctrl+V')
+                );
+                return;
+            }
+
+            const recipient = this._settings.get_string('mailto-recipient').trim();
+            let subject = this._settings.get_string('mailto-subject').trim();
+            if (!subject) {
+                const firstLine = bodyText.split(/\r?\n/)[0].replace(/[\x00-\x1F\x7F]/g, '').trim();
+                subject = firstLine.slice(0, 80);
+            }
+
+            const encodedTo = encodeURIComponent(recipient);
+            const queryParts = [];
+            if (subject)
+                queryParts.push(`subject=${encodeURIComponent(subject)}`);
+            queryParts.push(`body=${encodeURIComponent(bodyText)}`);
+
+            const mailtoUri = `mailto:${encodedTo}?${queryParts.join('&')}`;
+
+            try {
+                Gio.AppInfo.launch_default_for_uri(mailtoUri, null);
+            } catch (e) {
+                console.error(`[ClipboardLineCleaner] Failed to launch mailto URI: ${e.message}`);
+                Main.notify(_('Clipboard Line Cleaner'), _(`Could not open mail client: ${e.message}`));
+            }
+        });
+    }
+
+    _sendClipboardToWebNote() {
+        this._clipboard.get_text(St.ClipboardType.CLIPBOARD, (clipboard, text) => {
+            if (!text || !text.trim()) {
+                Main.notify(_('Clipboard Line Cleaner'), _('Clipboard is empty'));
+                return;
+            }
+
+            if (text.length > 1000000) {
+                Main.notify(_('Clipboard Line Cleaner'), _('Skipped clipboard text larger than 1 MB'));
+                return;
+            }
+
+            const cleanFirst = this._settings.get_boolean('webnote-clean-first');
+            const noteText = cleanFirst ? this._cleanText(text) : text;
+
+            if (cleanFirst && noteText !== text) {
+                this._clipboard.set_text(St.ClipboardType.CLIPBOARD, noteText);
+                this._lastClipboardText = noteText;
+            }
+
+            const provider = this._settings.get_string('webnote-provider');
+            let targetUrl = '';
+
+            if (provider === 'onenote') {
+                targetUrl = 'https://www.onenote.com/notebooks';
+            } else if (provider === 'custom') {
+                targetUrl = this._settings.get_string('webnote-custom-url').trim();
+                if (!/^https?:\/\//i.test(targetUrl)) {
+                    Main.notify(
+                        _('Clipboard Line Cleaner'),
+                        _('Please set a valid http:// or https:// URL in Preferences')
+                    );
+                    return;
+                }
+            } else {
+                // Default: Google Keep (pre-fill title/text when short enough, plus clipboard ready for Ctrl+V)
+                const firstLine = noteText.split(/\r?\n/)[0].replace(/[\x00-\x1F\x7F]/g, '').trim().slice(0, 80);
+                if (noteText.length <= 2500) {
+                    const params = [];
+                    if (firstLine)
+                        params.push(`title=${encodeURIComponent(firstLine)}`);
+                    params.push(`text=${encodeURIComponent(noteText)}`);
+                    targetUrl = `https://keep.google.com/?${params.join('&')}`;
+                } else {
+                    targetUrl = 'https://keep.google.com/';
+                }
+            }
+
+            try {
+                Gio.AppInfo.launch_default_for_uri(targetUrl, null);
+                Main.notify(_('Clipboard Line Cleaner'), _('Opened web note (cleaned text ready to paste)'));
+            } catch (e) {
+                console.error(`[ClipboardLineCleaner] Failed to launch web note URL: ${e.message}`);
+                Main.notify(_('Clipboard Line Cleaner'), _(`Could not open browser: ${e.message}`));
             }
         });
     }
@@ -370,6 +488,8 @@ class ClipboardLineCleaner extends PanelMenu.Button {
         this._removeNewlinesItem.disconnectObject(this);
         this._prefsItem.disconnectObject(this);
         this._cleanNowItem.disconnectObject(this);
+        this._composeEmailItem.disconnectObject(this);
+        this._webNoteItem.disconnectObject(this);
 
         for (const item of this._docItems) {
             item.disconnectObject(this);

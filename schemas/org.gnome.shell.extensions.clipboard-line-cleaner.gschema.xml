@@ -34,5 +34,31 @@
     <key name="doc3-enabled" type="b"><default>false</default></key>
     <key name="doc3-path" type="s"><default>''</default></key>
     <key name="doc3-prepend" type="b"><default>false</default></key>
+    <!-- Email Compose -->
+    <key name="mailto-recipient" type="s">
+      <default>''</default>
+      <summary>Default email recipient</summary>
+    </key>
+    <key name="mailto-subject" type="s">
+      <default>''</default>
+      <summary>Default email subject</summary>
+    </key>
+    <key name="mailto-clean-first" type="b">
+      <default>true</default>
+      <summary>Clean clipboard text before composing email</summary>
+    </key>
+    <!-- Web Note -->
+    <key name="webnote-provider" type="s">
+      <default>'keep'</default>
+      <summary>Web note service preset (keep, onenote, custom)</summary>
+    </key>
+    <key name="webnote-custom-url" type="s">
+      <default>''</default>
+      <summary>Custom web note URL</summary>
+    </key>
+    <key name="webnote-clean-first" type="b">
+      <default>true</default>
+      <summary>Clean clipboard text before opening web note</summary>
+    </key>
   </schema>
 </schemalist>

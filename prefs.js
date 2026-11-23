@@ -52,6 +52,80 @@ export default class ClipboardLineCleanerPreferences extends ExtensionPreference
         separatorGroup.add(modeRow);
         separatorGroup.add(customRow);
 
+        // Email Compose Group
+        const emailGroup = new Adw.PreferencesGroup({
+            title: _('Email Compose'),
+            description: _('Configure defaults for composing an email from clipboard text. Leave subject empty to use the first line.'),
+        });
+        page.add(emailGroup);
+
+        const recipientRow = new Adw.EntryRow({
+            title: _('Default Recipient (To)'),
+        });
+        settings.bind('mailto-recipient', recipientRow, 'text', Gio.SettingsBindFlags.DEFAULT);
+        emailGroup.add(recipientRow);
+
+        const subjectRow = new Adw.EntryRow({
+            title: _('Default Subject (optional)'),
+        });
+        settings.bind('mailto-subject', subjectRow, 'text', Gio.SettingsBindFlags.DEFAULT);
+        emailGroup.add(subjectRow);
+
+        const cleanFirstRow = new Adw.SwitchRow({
+            title: _('Clean text before composing'),
+            subtitle: _('Apply active empty-line and continuous-text rules first'),
+        });
+        settings.bind('mailto-clean-first', cleanFirstRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        emailGroup.add(cleanFirstRow);
+
+        // Web Note Group
+        const webnoteGroup = new Adw.PreferencesGroup({
+            title: _('Web Note'),
+            description: _('Clean clipboard text so it is ready to paste, then open your preferred note service in the browser.'),
+        });
+        page.add(webnoteGroup);
+
+        const providers = [
+            { id: 'keep', label: _('Google Keep') },
+            { id: 'onenote', label: _('Microsoft OneNote') },
+            { id: 'custom', label: _('Custom URL') },
+        ];
+
+        const providerModel = new Gtk.StringList();
+        for (const p of providers)
+            providerModel.append(p.label);
+
+        const providerRow = new Adw.ComboRow({
+            title: _('Note Service'),
+            model: providerModel,
+        });
+
+        const currentProvider = settings.get_string('webnote-provider');
+        const initialIdx = Math.max(0, providers.findIndex(p => p.id === currentProvider));
+        providerRow.set_selected(initialIdx);
+
+        const customUrlRow = new Adw.EntryRow({
+            title: _('Custom Note URL (https://...)'),
+            sensitive: providers[initialIdx].id === 'custom',
+        });
+        settings.bind('webnote-custom-url', customUrlRow, 'text', Gio.SettingsBindFlags.DEFAULT);
+
+        providerRow.connect('notify::selected', () => {
+            const selected = providers[providerRow.get_selected()] || providers[0];
+            settings.set_string('webnote-provider', selected.id);
+            customUrlRow.set_sensitive(selected.id === 'custom');
+        });
+
+        webnoteGroup.add(providerRow);
+        webnoteGroup.add(customUrlRow);
+
+        const webnoteCleanRow = new Adw.SwitchRow({
+            title: _('Clean text before opening'),
+            subtitle: _('Updates the clipboard with cleaned text so Ctrl+V pastes cleanly'),
+        });
+        settings.bind('webnote-clean-first', webnoteCleanRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        webnoteGroup.add(webnoteCleanRow);
+
         // Info Group
         const infoGroup = new Adw.PreferencesGroup({
             title: _('Auto-Save Clipboard to .txt Files'),
