@@ -1,64 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.clipboard-line-cleaner" path="/org/gnome/shell/extensions/clipboard-line-cleaner/">
-    <key name="remove-empty-lines" type="b">
-      <default>false</default>
-      <summary>Remove empty lines automatically</summary>
-    </key>
-    <key name="remove-newlines" type="b">
-      <default>false</default>
-      <summary>Convert clipboard text to continuous text</summary>
-    </key>
-
-    <!-- Separator settings -->
-    <key name="separator-mode" type="s">
-      <default>'newline'</default>
-      <summary>Separator style between saved clipboard entries</summary>
-    </key>
-    <key name="custom-separator" type="s">
-      <default>'\n---\n'</default>
-      <summary>Custom separator string (supports \n and \t)</summary>
-    </key>
-
-    <!-- Document 1 -->
+    <key name="remove-empty-lines" type="b"><default>false</default></key>
+    <key name="remove-newlines" type="b"><default>false</default></key>
+    <key name="separator-mode" type="s"><default>'newline'</default></key>
+    <key name="custom-separator" type="s"><default>'\n---\n'</default></key>
     <key name="doc1-enabled" type="b"><default>false</default></key>
     <key name="doc1-path" type="s"><default>''</default></key>
     <key name="doc1-prepend" type="b"><default>false</default></key>
-
-    <!-- Document 2 -->
     <key name="doc2-enabled" type="b"><default>false</default></key>
     <key name="doc2-path" type="s"><default>''</default></key>
     <key name="doc2-prepend" type="b"><default>false</default></key>
-
-    <!-- Document 3 -->
     <key name="doc3-enabled" type="b"><default>false</default></key>
     <key name="doc3-path" type="s"><default>''</default></key>
     <key name="doc3-prepend" type="b"><default>false</default></key>
-    <!-- Email Compose -->
-    <key name="mailto-recipient" type="s">
-      <default>''</default>
-      <summary>Default email recipient</summary>
-    </key>
-    <key name="mailto-subject" type="s">
-      <default>''</default>
-      <summary>Default email subject</summary>
-    </key>
-    <key name="mailto-clean-first" type="b">
-      <default>true</default>
-      <summary>Clean clipboard text before composing email</summary>
-    </key>
-    <!-- Web Note -->
-    <key name="webnote-provider" type="s">
-      <default>'keep'</default>
-      <summary>Web note service preset (keep, onenote, custom)</summary>
-    </key>
-    <key name="webnote-custom-url" type="s">
-      <default>''</default>
-      <summary>Custom web note URL</summary>
-    </key>
-    <key name="webnote-clean-first" type="b">
-      <default>true</default>
-      <summary>Clean clipboard text before opening web note</summary>
-    </key>
+    <key name="mailto-recipient" type="s"><default>''</default></key>
+    <key name="mailto-subject" type="s"><default>''</default></key>
+    <key name="mailto-clean-first" type="b"><default>true</default></key>
+    <key name="webnote-provider" type="s"><default>'keep'</default></key>
+    <key name="webnote-custom-url" type="s"><default>''</default></key>
+    <key name="webnote-clean-first" type="b"><default>true</default></key>
+    <key name="social-slot-1" type="s"><default>'mastodon'</default></key>
+    <key name="social-slot-2" type="s"><default>'bluesky'</default></key>
+    <key name="social-slot-3" type="s"><default>''</default></key>
+    <key name="social-mastodon-instance" type="s"><default>'https://mastodon.social'</default></key>
+    <key name="social-custom-url" type="s"><default>''</default></key>
+    <key name="social-clean-first" type="b"><default>true</default></key>
+    <key name="app-slot-1" type="s"><default>''</default></key>
+    <key name="app-slot-2" type="s"><default>''</default></key>
+    <key name="app-slot-3" type="s"><default>''</default></key>
+    <key name="app-pass-file" type="b"><default>false</default></key>
+    <key name="app-clean-first" type="b"><default>true</default></key>
+    <key name="custom-script-path" type="s"><default>''</default></key>
+    <key name="custom-script-clean-first" type="b"><default>true</default></key>
   </schema>
 </schemalist>
