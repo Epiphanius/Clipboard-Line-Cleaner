@@ -154,28 +154,10 @@ export default class ClipboardLineCleanerPreferences extends ExtensionPreference
 
             const chooseBtn = new Gtk.Button({ label: _('Choose...'), valign: Gtk.Align.CENTER });
             chooseBtn.connect('clicked', () => {
-                const dialog = new Gtk.AppChooserDialog({
-                    transient_for: window,
-                    modal: true,
-                    content_type: 'text/plain',
+                this._openAppPickerDialog(window, (appId) => {
+                    settings.set_string(key, appId);
+                    updateSubtitle();
                 });
-                const widget = dialog.get_widget();
-                if (widget) {
-                    widget.set_show_all(true);
-                    widget.set_show_recommended(true);
-                    widget.set_show_other(true);
-                }
-                dialog.connect('response', (dlg, responseId) => {
-                    if (responseId === Gtk.ResponseType.OK) {
-                        const appId = dlg.get_app_info()?.get_id();
-                        if (appId) {
-                            settings.set_string(key, appId);
-                            updateSubtitle();
-                        }
-                    }
-                    dlg.destroy();
-                });
-                dialog.present();
             });
 
             const clearBtn = new Gtk.Button({
@@ -208,6 +190,86 @@ export default class ClipboardLineCleanerPreferences extends ExtensionPreference
         appsGroup.add(cleanAppRow);
     }
 
+    _openAppPickerDialog(parentWindow, onSelected) {
+        const dialog = new Adw.Window({
+            title: _('Select Application'),
+            transient_for: parentWindow,
+            modal: true,
+            default_width: 420,
+            default_height: 520,
+        });
+
+        const toolbarView = new Adw.ToolbarView();
+        const headerBar = new Adw.HeaderBar();
+        toolbarView.add_top_bar(headerBar);
+
+        const searchEntry = new Gtk.SearchEntry({
+            placeholder_text: _('Search applications...'),
+            margin_start: 12,
+            margin_end: 12,
+            margin_top: 8,
+            margin_bottom: 8,
+        });
+        toolbarView.add_top_bar(searchEntry);
+
+        const listBox = new Gtk.ListBox({
+            selection_mode: Gtk.SelectionMode.NONE,
+            css_classes: ['boxed-list'],
+            margin_start: 12,
+            margin_end: 12,
+            margin_top: 6,
+            margin_bottom: 12,
+        });
+
+        const seenIds = new Set();
+        const apps = Gio.AppInfo.get_all()
+            .filter(app => {
+                const id = app.get_id();
+                if (!id || !app.should_show() || seenIds.has(id))
+                    return false;
+                seenIds.add(id);
+                return true;
+            })
+            .sort((a, b) => a.get_display_name().localeCompare(b.get_display_name()));
+
+        for (const app of apps) {
+            const row = new Adw.ActionRow({
+                title: app.get_display_name(),
+                subtitle: app.get_id(),
+                activatable: true,
+            });
+            row._searchText = `${app.get_display_name()} ${app.get_id()}`.toLowerCase();
+
+            const icon = app.get_icon();
+            const image = icon
+                ? Gtk.Image.new_from_gicon(icon)
+                : Gtk.Image.new_from_icon_name('application-x-executable');
+            image.set_pixel_size(24);
+            row.add_prefix(image);
+
+            row.connect('activated', () => {
+                onSelected(app.get_id());
+                dialog.close();
+            });
+            listBox.append(row);
+        }
+
+        listBox.set_filter_func((row) => {
+            const query = searchEntry.get_text().trim().toLowerCase();
+            return !query || row._searchText.includes(query);
+        });
+        searchEntry.connect('search-changed', () => listBox.invalidate_filter());
+
+        const scrolled = new Gtk.ScrolledWindow({
+            hscrollbar_policy: Gtk.PolicyType.NEVER,
+            vexpand: true,
+            child: listBox,
+        });
+        toolbarView.set_content(scrolled);
+        dialog.set_content(toolbarView);
+        dialog.present();
+    }
+
     _buildCustomScriptGroup(page, window, settings) {
         const scriptGroup = new Adw.PreferencesGroup({
             title: _('Custom Bash Script'),
@@ -215,7 +277,7 @@ export default class ClipboardLineCleanerPreferences extends ExtensionPreference
         });
         page.add(scriptGroup);
 
-        const scriptRow = new Adw.EntryRow({ title: _('Executable script path') });
+        const scriptRow = new Adw.EntryRow({ title: _('Script command (e.g. ~/bin/ct-append-closed.py -n Notes)') });
         settings.bind('custom-script-path', scriptRow, 'text', Gio.SettingsBindFlags.DEFAULT);
 
         const browseBtn = new Gtk.Button({
@@ -228,8 +290,10 @@ export default class ClipboardLineCleanerPreferences extends ExtensionPreference
             dialog.open(window, null, (dlg, res) => {
                 try {
                     const selectedPath = dlg.open_finish(res)?.get_path();
-                    if (selectedPath)
-                        settings.set_string('custom-script-path', selectedPath);
+                    if (selectedPath) {
+                        const quoted = selectedPath.includes(' ') ? `"${selectedPath}"` : selectedPath;
+                        settings.set_string('custom-script-path', quoted);
+                    }
                 } catch (e) {}
             });
         });

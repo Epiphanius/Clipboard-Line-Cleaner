@@ -10,10 +10,10 @@ A lightweight GNOME Shell extension (GNOME 49–51) that automatically cleans co
   - **1 MB Payload Safeguard:** Automatically skips oversized clipboard contents (> 1 MB) to keep GNOME Shell responsive.
 - **Auto-Save to `.txt` Documents (up to 3 slots):**
   - Append or prepend cleaned clipboard text to up to three plain-text files with configurable separators (single newline, blank line, `[YYYY-MM-DD HH:MM:SS]` timestamp, or custom `\n`/`\t` string).
-- **Compact Quick-Launch Rows (v12):**
+- **Compact Quick-Launch Rows (v14):**
   - **Social Media Presets (up to 3 buttons):** One-click buttons for **Mastodon** (configurable instance URL), **Bluesky**, **X**, **LinkedIn**, **Threads**, or a **Custom URL** template (`{text}`), with character-limit notices.
   - **Local Applications (up to 3 buttons):** Launch favorite `.desktop` applications with cleaned clipboard text ready to paste (`Ctrl+V`) or passed via a private temporary `.txt` file.
-  - **Custom Bash Script (`stdin`):** Pipe cleaned clipboard text asynchronously over `stdin` to any executable script (e.g., `~/bin/clip2sh`).
+  - **Custom Bash Script (`stdin`):** Pipe cleaned clipboard text asynchronously over `stdin` to any executable script with optional arguments (e.g., `~/bin/ct-append-closed.py -n Notes`).
 - **Email Compose & Web Note:**
   - Open your default mail client (`mailto:`) with cleaned clipboard text and automatic first-line subject fallback.
   - Copy cleaned text and launch **Google Keep**, **Microsoft OneNote**, or a custom web note URL.

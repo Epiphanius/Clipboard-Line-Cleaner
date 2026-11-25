@@ -252,13 +252,35 @@ class ClipboardLineCleaner extends PanelMenu.Button {
         this._populateCompactRow(this._appsRowItem, slots);
     }
 
+    _parseCustomScriptCommand() {
+        const rawCmd = this._settings.get_string('custom-script-path').trim();
+        if (!rawCmd)
+            return null;
+        try {
+            const [ok, argv] = GLib.shell_parse_argv(rawCmd);
+            if (!ok || !argv || argv.length === 0)
+                return null;
+            if (argv[0].startsWith('~/'))
+                argv[0] = GLib.build_filenamev([GLib.get_home_dir(), argv[0].slice(2)]);
+            return argv;
+        } catch (e) {
+            return null;
+        }
+    }
+
     _updateScriptItem() {
-        const rawPath = this._settings.get_string('custom-script-path').trim();
-        if (!rawPath) {
-            this._scriptItem.visible = false;
+        const argv = this._parseCustomScriptCommand();
+        if (!argv) {
+            const rawCmd = this._settings.get_string('custom-script-path').trim();
+            if (!rawCmd) {
+                this._scriptItem.visible = false;
+                return;
+            }
+            this._scriptItem.label.set_text(_('Run script: (invalid command)'));
+            this._scriptItem.visible = true;
             return;
         }
-        this._scriptItem.label.set_text(_(`Run script: ${GLib.path_get_basename(rawPath)}`));
+        this._scriptItem.label.set_text(_(`Run script: ${GLib.path_get_basename(argv[0])}`));
         this._scriptItem.visible = true;
     }
 
@@ -337,28 +359,32 @@ class ClipboardLineCleaner extends PanelMenu.Button {
     }
 
     _runCustomScript() {
-        let rawPath = this._settings.get_string('custom-script-path').trim();
-        if (!rawPath) {
+        const rawCmd = this._settings.get_string('custom-script-path').trim();
+        if (!rawCmd) {
             Main.notify(_('Clipboard Line Cleaner'), _('No custom script configured in Preferences'));
             return;
         }
-        if (rawPath.startsWith('~/'))
-            rawPath = GLib.build_filenamev([GLib.get_home_dir(), rawPath.slice(2)]);
-        if (!GLib.file_test(rawPath, GLib.FileTest.IS_REGULAR) ||
-            !GLib.file_test(rawPath, GLib.FileTest.IS_EXECUTABLE)) {
-            Main.notify(_('Clipboard Line Cleaner'), _(`Script not found or not executable: ${rawPath}`));
+        const argv = this._parseCustomScriptCommand();
+        if (!argv) {
+            Main.notify(_('Clipboard Line Cleaner'), _('Invalid script command syntax in Preferences'));
+            return;
+        }
+        const binPath = argv[0];
+        if (!GLib.file_test(binPath, GLib.FileTest.IS_REGULAR) ||
+            !GLib.file_test(binPath, GLib.FileTest.IS_EXECUTABLE)) {
+            Main.notify(_('Clipboard Line Cleaner'), _(`Script not found or not executable: ${binPath}`));
             return;
         }
         this._withPreparedClipboardText(this._settings.get_boolean('custom-script-clean-first'), (preparedText) => {
             try {
                 const proc = Gio.Subprocess.new(
-                    [rawPath],
+                    argv,
                     Gio.SubprocessFlags.STDIN_PIPE | Gio.SubprocessFlags.STDERR_PIPE
                 );
                 proc.communicate_utf8_async(preparedText, null, (subproc, res) => {
                     try {
                         const [, , stderr] = subproc.communicate_utf8_finish(res);
-                        const scriptName = GLib.path_get_basename(rawPath);
+                        const scriptName = GLib.path_get_basename(binPath);
                         if (subproc.get_successful()) {
                             Main.notify(_('Clipboard Line Cleaner'), _(`Sent clipboard to ${scriptName}`));
                         } else {
