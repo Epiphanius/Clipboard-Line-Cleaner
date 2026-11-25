@@ -1,6 +1,6 @@
-# Clipboard Line Cleaner — Post-v13 Backlog
+# Clipboard Line Cleaner — Post-v14 Backlog
 
-**Current Release:** v13 (GNOME Shell 49–51, English-only UI)
+**Current Release:** v14 (GNOME Shell 49–51, English-only UI)
 
 ## Future Ideas
 - [ ] Optional keyboard shortcut binding (`addKeybinding`) for **Clean & save clipboard now** and **Run custom script**.
